@@ -5,131 +5,87 @@
 *
 */
 Module.register("MMM-DockerVisualizer", {
+
 		// Default module config.
 		defaults: {
-				visualizerIp: "192.168.0.1:8080"
+			visualizerIp: "http://192.168.0.10:8080"
 		},
 
-		getNodes: function() {
-        var nodes = []
-        var tasks = []
-        var services = []
-              
-        http.get(this.config.visualizerIp + "/apis/nodes", function(res){
+		nodes: [],
 
-            response = '';
+		start: function() {
+			Log.log("Sending notification to helper...")
+			this.sendSocketNotification('GET_NODES', this.config.visualizerIp);
+			this.loaded = false;
+		},
 
-            res.on('data', function(data){
-              response += data;
-            });
-
-            res.on('end', function(){
-              var json = JSON.parse(response)
-              for(var i = 0; i < json.objects.length; i++) {
-                node = json.objects[i]
-                
-                nodes.push({
-                  'name': node.Description.Hostname,
-                  'id': node.ID,
-                  'services': []
-                })
-              }
-
-              for(var i = 0; i < nodes.length; i++) {
-                console.log(nodes[i])
-              }
-              console.log()
-            });
-            }).on('error', function(e){
-              console.log('Got an error: ', e);
-        });
-
-
-        http.get(this.config.visualizerIp + "/apis/services", function(res){
-            response = '';
-
-            res.on('data', function(data){
-              response += data;
-            });
-
-            res.on('end', function(){
-              var json = JSON.parse(response)
-              for(var i = 0; i < json.objects.length; i++) {
-                service = json.objects[i]
-                
-                services.push({
-                  'name': service.Spec.Name,
-                  'id': service.ID,
-                })
-              }
-
-              for(var i = 0; i < services.length; i++) {
-                console.log(services[i])
-              }
-              console.log()
-            });
-            }).on('error', function(e){
-              console.log('Got an error: ', e);
-        });
-
-        http.get(this.config.visualizerIp + "/apis/tasks", function(res){
-            response = '';
-
-            res.on('data', function(data){
-              response += data;
-            });
-
-            res.on('end', function(){
-              var json = JSON.parse(response)
-              for(var i = 0; i < json.objects.length; i++) {
-                task = json.objects[i]
-                
-                if(task.DesiredState == "running") {
-                  tasks.push({
-                    'nodeID': task.NodeID,
-                    'serviceID': task.ServiceID
-                  })
-                }
-              }
-
-              for(var i = 0; i < tasks.length; i++) {
-                console.log(tasks[i])
-              }
-              console.log()
-              bindServices()
-        });
-        }).on('error', function(e){
-          console.log('Got an error: ', e);
-        });
-
-
-      for(var i = 0; i < tasks.length; i++) {
-        for(var j = 0; j < services.length; j++) {
-          if(tasks[i]["serviceID"] == services[j]["id"]) {
-            for(var k = 0; k < nodes.length; k++) {
-              if(tasks[i]["nodeID"] == nodes[k]["id"]) {
-                nodes[k]["services"].push(services[j])
-                console.log(nodes[k])
-              }
-            }
-          }
-        }
-      }
-		}
+		getStyles: function() {
+			return [
+				this.file('css/grid.css'),
+				this.file('css/spacing.css')
+			]
+		},
 
 		getDom: function() {
 			var wrapper = document.createElement("div")
-			wrapper.innerHTML = "HELLO"
+			wrapper.className += "container";
+
+			if(nodes[0] == "ERROR") {
+				wrapper.innerHTML = "Error retreiving docker services."
+			}
+
+			var table = document.createElement("div")
+			table.className += "row";
+
+			for(var i = 0; i < nodes.length; i++) {
+				var col = document.createElement("div")
+				col.className += "col-md-4 p-0"
+				col.setAttribute("style", "border: 1px solid white")
+
+				var head = document.createElement("h2")
+				head.className += "row m-0 p-0 pb-3";
+				head.setAttribute("style", "text-align: center")
+				head.innerHTML = nodes[i]["name"]
+				col.appendChild(head)
+
+				var headInfo = document.createElement("h4")
+				headInfo.className += "row m-0 p-0 pb-3"
+				headInfo.setAttribute("style", "text-align: center; border-bottom: 1px solid white")
+				headInfo.innerHTML = nodes[i]["addr"] + "\n" + nodes[i]["state"]
+				col.appendChild(headInfo)
+
+				for(var j = 0; j < nodes[i]["services"].length; j++) {
+					var service = nodes[i]["services"][j];
+					var serviceDOM = document.createElement("div")
+					serviceDOM.className += "row m-0"
+					serviceDOM.setAttribute("style", "border-bottom: 1px solid white")
+					
+					var serviceContent = document.createElement("div")
+					serviceContent.className = "m-0 pl-1 pr-1"
+
+					var serviceName = document.createElement("h4")
+					serviceName.innerHTML = service["name"] 
+					serviceName.setAttribute("style", "text-align: left")
+					serviceContent.appendChild(serviceName)
+
+					serviceDOM.appendChild(serviceContent)
+
+					col.appendChild(serviceDOM)
+				}
+				
+				table.appendChild(col)
+			}
+
+			wrapper.appendChild(table)
 			return wrapper
+		},
+
+		socketNotificationReceived: function (notification, payload) {
+			if (notification === "NODES") {
+				Log.log(payload)
+				nodes = payload
+				this.updateDom()
+			}
 		}
 })
-var http = require('http')
-
-var url_nodes = 'http://192.168.0.10:8080/apis/nodes'
-var url_tasks = 'http://192.168.0.10:8080/apis/tasks'
-var url_services = 'http://192.168.0.10:8080/apis/services'
-
-nodes = []
-tasks = []
-services = []
 
