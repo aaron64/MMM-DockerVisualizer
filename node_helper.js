@@ -56,7 +56,8 @@ http.get(url + "/apis/services", function(res){
 				
 				services.push({
 					'name': service.Spec.Name,
-					'id': service.ID,
+					'status': '',
+					'id': service.ID
 				})
 			}
 
@@ -84,7 +85,8 @@ http.get(url + "/apis/tasks", function(res){
 				if(task.DesiredState == "running") {
 					tasks.push({
 						'nodeID': task.NodeID,
-						'serviceID': task.ServiceID
+						'serviceID': task.ServiceID,
+						'status': task.Status.State
 					})
 				}
 			}
@@ -110,6 +112,7 @@ function bindServices() {
 			if(tasks[i]["serviceID"] == services[j]["id"]) {
 				for(var k = 0; k < nodes.length; k++) {
 					if(tasks[i]["nodeID"] == nodes[k]["id"]) {
+						services[j]["status"] = tasks[i]["status"]
 						nodes[k]["services"].push(services[j])
 						console.log(nodes[k])
 					}

@@ -48,9 +48,9 @@ Module.register("MMM-DockerVisualizer", {
 				head.innerHTML = nodes[i]["name"]
 				col.appendChild(head)
 
-				var headInfo = document.createElement("h4")
-				headInfo.className += "row m-0 p-0 pb-3"
-				headInfo.setAttribute("style", "text-align: center; border-bottom: 1px solid white")
+				var headInfo = document.createElement("div")
+				headInfo.className += "row m-0"
+				headInfo.setAttribute("style", "text-align: center; border-bottom: 1px solid white; white-space:pre-line")
 				headInfo.innerHTML = nodes[i]["addr"] + "\n" + nodes[i]["state"]
 				col.appendChild(headInfo)
 
@@ -65,8 +65,15 @@ Module.register("MMM-DockerVisualizer", {
 
 					var serviceName = document.createElement("h4")
 					serviceName.innerHTML = service["name"] 
+					serviceName.className += "m-0"
 					serviceName.setAttribute("style", "text-align: left")
 					serviceContent.appendChild(serviceName)
+
+					var serviceStatus = document.createElement("h6")
+					serviceStatus.innerHTML = "Status: " + service["status"]
+					serviceStatus.className += "m-0"
+					serviceStatus.setAttribute("style", "text-align: left")
+					serviceContent.appendChild(serviceStatus)
 
 					serviceDOM.appendChild(serviceContent)
 
