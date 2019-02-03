@@ -28,7 +28,7 @@ Module.register("MMM-DockerVisualizer", {
 
 		getDom: function() {
 			var wrapper = document.createElement("div")
-			wrapper.className += "container";
+			wrapper.className += "container w-50 h-50";
 
 			if(nodes[0] == "ERROR") {
 				wrapper.innerHTML = "Error retreiving docker services."
@@ -40,7 +40,7 @@ Module.register("MMM-DockerVisualizer", {
 			for(var i = 0; i < nodes.length; i++) {
 				var col = document.createElement("div")
 				col.className += "col-md-4 p-0"
-				col.setAttribute("style", "border: 1px solid white")
+				col.setAttribute("style", "border: 1px solid white; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;")
 
 				var head = document.createElement("h2")
 				head.className += "row m-0 p-0 pb-3";
