@@ -32,10 +32,6 @@ http.get(url + "/apis/nodes", function(res){
 				})
 			}
 
-			for(var i = 0; i < nodes.length; i++) {
-				console.log(nodes[i])
-			}
-			console.log()
     });
 		}).on('error', function(e){
       console.log('Got an error: ', e);
@@ -61,10 +57,6 @@ http.get(url + "/apis/services", function(res){
 				})
 			}
 
-			for(var i = 0; i < services.length; i++) {
-				console.log(services[i])
-			}
-			console.log()
     });
 		}).on('error', function(e){
       console.log('Got an error: ', e);
@@ -91,13 +83,8 @@ http.get(url + "/apis/tasks", function(res){
 				}
 			}
 
-			for(var i = 0; i < tasks.length; i++) {
-				console.log(tasks[i])
-			}
 			bindServices()
-			console.log("one")
-
-			console.log("Nodes:")
+			console.log("Docker nodes:")
 			console.log(nodes)	
 			module.sendSocketNotification('NODES', nodes)			
     });
@@ -114,7 +101,6 @@ function bindServices() {
 					if(tasks[i]["nodeID"] == nodes[k]["id"]) {
 						services[j]["status"] = tasks[i]["status"]
 						nodes[k]["services"].push(services[j])
-						console.log(nodes[k])
 					}
 				}
 			}
@@ -129,7 +115,6 @@ module.exports = NodeHelper.create({
 	socketNotificationReceived: function(notification, payload){
     if(notification === 'GET_NODES'){
 			console.log("Retreiving nodes...")
-			console.log(payload)
 			getData(payload, this)
 		}
 	}
