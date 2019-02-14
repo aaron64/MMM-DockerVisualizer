@@ -41,7 +41,7 @@ Example of `config.js`
 
 ## Contributors
 
-<a href="https://github.com/ManoMarks">ManoMarks</a> For creating the docker visualizer that I pull all the information from. (Thank you)
+<a href="https://github.com/dockersamples">Docker's samples</a> For creating the docker visualizer that I pull all the information from. (Thank you)
 
 ## Version
 
