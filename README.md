@@ -19,9 +19,10 @@ npm install
 ## Config
 
 
-|Option|Description|
-|---|---|
-|visualizerIp| The address (and port) of the docker swarm visualizer 
+|Option|Description|Default|
+|---|---|---|
+|visualizerIp| The address (and port) of the docker swarm visualizer|http://127.0.0.1:8080
+|updateDelay| Refresh rate (in seconds) to fetch from the visualizer|60
 
 Example of `config.js`
 ```
